@@ -1,0 +1,89 @@
+# Ponderada iOS — App de Programas em SwiftUI
+
+Esse README é pra explicar como foi o processo de desenvolver esse projeto. 
+
+---
+
+## O que é o projeto?
+
+É um app iOS feito em SwiftUI que lista programas de TV — animes, desenhos e séries. Dá pra ver uma lista com cards, clicar em um e ver os detalhes: sinopse, número de episódios, temporadas, avaliação, status e os personagens principais.
+
+Os três programas que aparecem no app são: **Naruto**, **Avatar: A Lenda de Aang** e **Stranger Things**.
+
+---
+
+## Como eu organizei o projeto
+
+Antes de sair codando, eu pensei numa estrutura que fizesse sentido. Separei em duas pastas principais dentro do projeto:
+
+```
+Models/
+    Programa.swift   → struct com os dados de cada programa + os dados fixos
+    Info.swift       → (reservado pra expansão futura)
+
+Views/
+    ListaView.swift         → tela principal com a lista
+    Detailview.swift        → tela de detalhes de cada programa
+    Components/
+        ShowCard.swift      → card reutilizável na lista
+        InfoBadge.swift     → badge de info (episódios, temporadas, etc)
+        CharacterRow.swift  → linha de personagem na tela de detalhe
+```
+
+Isso ajuda muito porque quando eu precisar mudar algo no card, sei exatamente onde está. Nada de arquivo gigante com tudo misturado.
+
+---
+
+## Passo a passo do que eu fiz
+
+### 1. Criei o Model
+
+Primeiro criei a `struct Programa` em `Programa.swift`. Ela guarda tudo: nome, tipo, emoji, gênero, sinopse, episódios, temporadas, avaliação, status e uma lista de personagens (que é uma tupla com nome, papel e emoji).
+
+Depois já coloquei os dados dos três programas ali mesmo, como constantes globais (`naruto`, `avatar`, `strangerThings`). Simples e funciona bem pra um projeto desse tamanho.
+
+### 2. Montei os componentes primeiro
+
+Antes de fazer as telas grandes, criei os componentes pequenos. Isso foi uma boa decisão porque quando fui montar a `ListaView` e a `DetailView`, os blocos já estavam prontos.
+
+**ShowCard**: é o card que aparece na lista. Tem uma barra lateral colorida (laranja pra anime, azul pra desenho, roxo pra série), um thumbnail com o emoji do programa, o nome, gênero e uma badge de avaliação. Usei um `enum TipoPrograma` ali mesmo pra mapear o tipo com uma cor.
+
+**InfoBadge**: um componente pequeno que mostra um ícone SF Symbol + um texto. Usei ele pra mostrar episódios, temporadas, avaliação e status na tela de detalhes.
+
+**CharacterRow**: uma linha com o emoji, nome e papel do personagem. Aparece numa lista na tela de detalhes.
+
+### 3. Tela de lista (`ListaView`)
+
+Bem direta: um `NavigationStack` com `ScrollView` e um `VStack` iterando sobre os programas com `ForEach`. Cada item é um `ShowCard` que já é um `NavigationLink` — então ao clicar, já navega pra tela de detalhe automaticamente.
+
+### 4. Tela de detalhe (`ProgramaDetalheView`)
+
+Essa foi a mais trabalhosa. Estrutura:
+
+- **Hero/Header**: um `ZStack` com um gradiente roxo → preto de fundo, o emoji do programa centralizado e o nome + tipo em cima.
+- **Sinopse**: texto simples.
+- **Info Badges**: `HStack` com os `InfoBadge` de episódios, temporadas, avaliação e status.
+- **Personagens**: lista de `CharacterRow`.
+
+### 5. Conectei tudo no App Entry Point
+
+O `ProgramasApp.swift` só aponta o `WindowGroup` pra `ListaView`. Nada demais aqui.
+
+---
+
+## O que aprendi no processo
+
+- Separar em componentes menores desde o início economiza muito tempo depois.
+- Usar `enum` com computed properties (como as cores por tipo de programa) deixa o código muito mais limpo do que um monte de `if/else`.
+- SwiftUI com `NavigationStack` + `NavigationLink` é bem intuitivo pra navegação simples.
+- Tuplas no Swift são práticas pra dados simples como a lista de personagens, mas pra algo maior valeria usar uma struct separada.
+
+---
+
+## Como rodar
+
+1. Abre o arquivo `ponderada-comp.xcodeproj` no Xcode.
+2. Seleciona um simulador iOS (iPhone 15 ou similar).
+3. `Cmd + R` pra rodar.
+
+Só isso. Sem dependências externas, sem SPM, nada. Projeto 100% nativo SwiftUI.
